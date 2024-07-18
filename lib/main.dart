@@ -1,6 +1,9 @@
 import 'package:ecommerce_task/helper/base_constants.dart';
+import 'package:ecommerce_task/providers/auth_provider.dart';
+import 'package:ecommerce_task/providers/products_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'theme/colors.dart';
 import 'utils/firebase_options.dart';
@@ -10,7 +13,12 @@ Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(const MyApp());
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
+      ],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

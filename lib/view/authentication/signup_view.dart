@@ -1,22 +1,21 @@
 import 'package:ecommerce_task/common_widgets/custom_text_field.dart';
 import 'package:ecommerce_task/common_widgets/my_elevated_button.dart';
 import 'package:ecommerce_task/helper/asset_constants.dart';
+import 'package:ecommerce_task/providers/auth_provider.dart';
 import 'package:ecommerce_task/theme/button_style.dart';
 import 'package:ecommerce_task/theme/colors.dart';
 import 'package:ecommerce_task/view/authentication/login_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
+import 'package:provider/provider.dart';
 class SignupView extends StatelessWidget {
    SignupView({super.key});
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  bool isObscure = false;
+
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return  SafeArea(child: Scaffold(
       backgroundColor: lightGrey,
       body: Padding(
@@ -56,7 +55,7 @@ class SignupView extends StatelessWidget {
                         borderSide: const BorderSide(color: redColor),
                         borderRadius: BorderRadius.circular(7)),
                     hintText: "Name",
-                    controller: nameController,
+                    controller: authProvider.nameController,
                     inputType: TextInputType.name,
                     inputFormatter: [
                     ],
@@ -65,10 +64,10 @@ class SignupView extends StatelessWidget {
                     contentPadding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                     onChanged: (w) {
-
+                      authProvider.validateName(w);
                     },
-                    // errorText:
-                    // controller.nameInputError.value ? "Enter name" : controller.validNameInputError.value ? "Name should be min 3 and max 40 characters": null,
+                    errorText:
+                    authProvider.isNameInvalid ? "Enter name" : null,
                   ),
                   SizedBox(height: 18,),
                   CustomTextField(
@@ -86,7 +85,7 @@ class SignupView extends StatelessWidget {
                         borderSide: const BorderSide(color: redColor),
                         borderRadius: BorderRadius.circular(7)),
                     hintText: "Email",
-                    controller: emailController,
+                    controller: authProvider.emailController,
                     inputType: TextInputType.emailAddress,
                     inputFormatter: [
                     ],
@@ -95,14 +94,14 @@ class SignupView extends StatelessWidget {
                     contentPadding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                     onChanged: (w) {
-
+                        authProvider.validateEmail(w);
                     },
-                    // errorText:
-                    // controller.nameInputError.value ? "Enter name" : controller.validNameInputError.value ? "Name should be min 3 and max 40 characters": null,
+                    errorText:
+                    authProvider.isEmailEmpty ? "Enter email address" :  authProvider.isEmailInvalid ? "Enter valid email address": null,
                   ),
                   SizedBox(height: 18,),
                   CustomTextField(hintText: "Password",
-                      fillColor: white,controller:passwordController,hintSize: 13,
+                      fillColor: white,controller:authProvider.passwordController,hintSize: 13,
                       enableBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: darkGrey),
                           borderRadius: BorderRadius.circular(10)),
@@ -115,12 +114,16 @@ class SignupView extends StatelessWidget {
                       border: OutlineInputBorder(
                           borderSide: BorderSide(color: darkGrey),
                           borderRadius: BorderRadius.circular(10)),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),isPassword: isObscure,suffix:Padding(
+                      onChanged: (w) {
+                        authProvider.validatePassword(w);
+                      },
+                      errorText:
+                      authProvider.isPasswordInvalid ? "Enter password" : null,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),isPassword: authProvider.isObscure,suffix:Padding(
                         padding: const EdgeInsets.only(right: 10.0),
                         child: InkWell(
-                            onTap: ()=>
-                            isObscure =!isObscure,
-                            child: Icon(!isObscure?Icons.visibility_off_rounded:Icons.remove_red_eye_rounded,size: 24,color: darkGrey,)),
+                            onTap: ()=>authProvider.onChangeObscure(),
+                            child: Icon(!authProvider.isObscure?Icons.visibility_off_rounded:Icons.remove_red_eye_rounded,size: 24,color: darkGrey,)),
                       ) ),
 
 
@@ -129,10 +132,11 @@ class SignupView extends StatelessWidget {
             ),
             SizedBox(height: 20,),
             Center(
-              child: MyElevatedButton(child: Padding(
+              child: authProvider.loading ?CircularProgressIndicator():MyElevatedButton(child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 10),
                 child: Text('Signup',style: TextStyle(color: Colors.white,fontSize: 18)),
               ), onPressed: (){
+                authProvider.validateSignUp();
               }, style: colorBtnWithRadiusStyle),
             ),SizedBox(height: 10,),
             Row(mainAxisAlignment: MainAxisAlignment.center,
@@ -146,6 +150,14 @@ class SignupView extends StatelessWidget {
                     child: Text("Login",style: TextStyle(color: primaryColor,fontSize: 18,fontWeight: FontWeight.w700),)),
               ],
             ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(authProvider.success == false
+                  ? ''
+                  : (authProvider.success
+                  ? 'Successfully registered ' + authProvider.userEmail
+                  : 'Registration failed')),
+            )
           ],
         ),
       ),
