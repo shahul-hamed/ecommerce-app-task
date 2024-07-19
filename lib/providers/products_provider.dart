@@ -6,16 +6,35 @@ import 'package:ecommerce_task/services/product_service.dart';
 import 'package:flutter/material.dart';
 
 class ProductsProvider with ChangeNotifier {
-  late ProductsModel data;
+  List<Products> products = [];
 
   bool loading = false;
   ProductService service = ProductService();
 
   getProducts(context) async {
-    loading = true;
-    data = await service.getProducts(context);
-    loading = false;
-
-    notifyListeners();
+    try {
+      loading = true;
+      ProductsModel data = await service.getProducts(context);
+      products = data.products ?? [];
+      loading = false;
+      print("length${products.length}");
+      notifyListeners();
+    }
+    catch(e){
+      debugPrint(e.toString());
+      loading = false;
+      notifyListeners();
+    }
+  }
+  double calculateDiscountPrice(Products data) {
+    double discountedAmt = ((double.parse(data.discountPercentage.toString()) / 100) * double.parse(data.price.toString()));
+    print("disc$discountedAmt");
+    data.discountedPrice = (double.parse(data.price.toString()) +  discountedAmt);
+    return data.discountedPrice.roundToDouble();
+  }
+  @override
+  void dispose() {
+    products.clear();
+    super.dispose();
   }
 }

@@ -1,8 +1,6 @@
 
-
-
-import 'package:ecommerce_task/model/product_model.dart';
-import 'package:ecommerce_task/services/product_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce_task/view/dashboard/dashboard_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -61,13 +59,13 @@ class AuthProvider with ChangeNotifier {
     }
     notifyListeners();
   }
-  validateSignUp() {
+  validateSignUp(BuildContext context) {
     validateName(nameController.text);
     validateEmail(emailController.text);
     validatePassword(passwordController.text);
     if(!isNameInvalid && !isEmailEmpty && !isEmailInvalid && !isPasswordInvalid) {
       loading=true;
-      _register();
+      _register(context);
     }
     else{
       isNameInvalid = true;
@@ -75,33 +73,64 @@ class AuthProvider with ChangeNotifier {
     }
     notifyListeners();
   }
-  validateLogin() {
+  validateLogin(BuildContext context) {
+    validateEmail(emailController.text);
+    validatePassword(passwordController.text);
+
     if(!isEmailEmpty && !isEmailInvalid && !isPasswordInvalid) {
-      loginLoading=true;
-      _signInWithEmailAndPassword();
+      // loginLoading=true;
+      notifyListeners();
+      _signInWithEmailAndPassword(context);
+
     }
     else{
       isEmailInvalid = true;
+      notifyListeners();
     print("invalid");
     }
-    notifyListeners();
   }
-  void _register() async {
-    final User? user = (await
-    auth.createUserWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
-    )
-    ).user;
-    if (user != null) {
-       _success = true;
-        userEmail = (user.email)??"";
-    } else {
+   _register(BuildContext context) async {
+    try{
+      final User? user = (await
+      auth.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      )
+      ).user;
+      if (user != null) {
         _success = true;
+        userEmail = (user.email)??"";
+        print("email$userEmail");
+        _createUser(user.uid);
+      } else {
+        _success = true;
+      }
+      loading =false;
+      notifyListeners();
+      if (!context.mounted) return;
+      navigateDashboard(context);
+
     }
-    loading =false;
+    catch(e){
+      debugPrint(e.toString());
+      loading = false;
+      notifyListeners();
+    }
+
   }
-  void _signInWithEmailAndPassword() async {
+  void _createUser(uid) async{
+    try{
+      var data =  {"name":nameController.text,"email":emailController.text} ;
+      await FirebaseFirestore.instance
+          .collection("user").doc(uid).set(data);
+    }
+    catch(e){
+      debugPrint(e.toString());
+      loading = false;
+      notifyListeners();
+    }
+  }
+   _signInWithEmailAndPassword(BuildContext context) async {
     final User? user = (await
     auth.signInWithEmailAndPassword(
       email: emailController.text,
@@ -109,12 +138,25 @@ class AuthProvider with ChangeNotifier {
     )
     ).user;
     if (user != null) {
-       _success = true;
         userEmail = (user.email)??"";
     } else {
-        _success = true;
     }
+    print("email$userEmail");
     loginLoading =false;
+    notifyListeners();
+    // if (!context.mounted) return;
+    // navigateDashboard(context);
   }
-
+  navigateDashboard(BuildContext context) {
+    Navigator.push(context,  MaterialPageRoute(builder: (context) => DashboardView()),);
+  }
+ @override
+  void dispose() {
+    loginLoading = false;
+    loading = false;
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 }

@@ -25,11 +25,11 @@ class SignupView extends StatelessWidget {
           children: [
             Text("E-shop",style: TextStyle(fontSize: 23,fontWeight: FontWeight.w700,color: primaryColor),),
             SizedBox(height: 15,),
-            Expanded(flex: 4,
+            Expanded(flex: 5,
               child: Container(alignment: Alignment.center,
                 decoration: BoxDecoration(
                     image: DecorationImage(image: AssetImage(AssetConstants.loginTopImg
-                      ,),fit: BoxFit.contain)
+                      ,),fit: BoxFit.fill)
                 ),
               ),
             ),
@@ -136,7 +136,7 @@ class SignupView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 10),
                 child: Text('Signup',style: TextStyle(color: Colors.white,fontSize: 18)),
               ), onPressed: (){
-                authProvider.validateSignUp();
+                authProvider.validateSignUp(context);
               }, style: colorBtnWithRadiusStyle),
             ),SizedBox(height: 10,),
             Row(mainAxisAlignment: MainAxisAlignment.center,

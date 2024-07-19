@@ -35,19 +35,19 @@ class Products {
   String? title;
   String? description;
   String? category;
-  double? price;
-  double? discountPercentage;
-  double? rating;
+  dynamic price = 0;
+  double discountedPrice =0;
+  dynamic discountPercentage =0;
+  dynamic rating;
   int? stock;
   List<String>? tags;
   String? brand;
   String? sku;
   int? weight;
-  Dimensions? dimensions;
+  // Dimensions? dimensions;
   String? warrantyInformation;
   String? shippingInformation;
   String? availabilityStatus;
-  List<Reviews>? reviews;
   String? returnPolicy;
   int? minimumOrderQuantity;
   Meta? meta;
@@ -59,19 +59,19 @@ class Products {
         this.title,
         this.description,
         this.category,
-        this.price,
-        this.discountPercentage,
+        this.price=0,
+        this.discountedPrice=0,
+        this.discountPercentage=0,
         this.rating,
         this.stock,
         this.tags,
         this.brand,
         this.sku,
         this.weight,
-        this.dimensions,
+        // this.dimensions,
         this.warrantyInformation,
         this.shippingInformation,
         this.availabilityStatus,
-        this.reviews,
         this.returnPolicy,
         this.minimumOrderQuantity,
         this.meta,
@@ -84,6 +84,7 @@ class Products {
     description = json['description'];
     category = json['category'];
     price = json['price'];
+    discountedPrice = json['discounted_price']??0;
     discountPercentage = json['discountPercentage'];
     rating = json['rating'];
     stock = json['stock'];
@@ -91,18 +92,12 @@ class Products {
     brand = json['brand'];
     sku = json['sku'];
     weight = json['weight'];
-    dimensions = json['dimensions'] != null
-        ? new Dimensions.fromJson(json['dimensions'])
-        : null;
+    // dimensions = json['dimensions'] != null
+    //     ? new Dimensions.fromJson(json['dimensions'])
+    //     : null;
     warrantyInformation = json['warrantyInformation'];
     shippingInformation = json['shippingInformation'];
     availabilityStatus = json['availabilityStatus'];
-    if (json['reviews'] != null) {
-      reviews = <Reviews>[];
-      json['reviews'].forEach((v) {
-        reviews!.add(new Reviews.fromJson(v));
-      });
-    }
     returnPolicy = json['returnPolicy'];
     minimumOrderQuantity = json['minimumOrderQuantity'];
     meta = json['meta'] != null ? new Meta.fromJson(json['meta']) : null;
@@ -124,15 +119,12 @@ class Products {
     data['brand'] = this.brand;
     data['sku'] = this.sku;
     data['weight'] = this.weight;
-    if (this.dimensions != null) {
-      data['dimensions'] = this.dimensions!.toJson();
-    }
+    // if (this.dimensions != null) {
+    //   data['dimensions'] = this.dimensions!.toJson();
+    // }
     data['warrantyInformation'] = this.warrantyInformation;
     data['shippingInformation'] = this.shippingInformation;
     data['availabilityStatus'] = this.availabilityStatus;
-    if (this.reviews != null) {
-      data['reviews'] = this.reviews!.map((v) => v.toJson()).toList();
-    }
     data['returnPolicy'] = this.returnPolicy;
     data['minimumOrderQuantity'] = this.minimumOrderQuantity;
     if (this.meta != null) {

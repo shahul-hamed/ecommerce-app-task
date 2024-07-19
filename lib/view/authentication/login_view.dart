@@ -5,6 +5,7 @@ import 'package:ecommerce_task/providers/auth_provider.dart';
 import 'package:ecommerce_task/theme/button_style.dart';
 import 'package:ecommerce_task/theme/colors.dart';
 import 'package:ecommerce_task/view/authentication/signup_view.dart';
+import 'package:ecommerce_task/view/dashboard/dashboard_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,6 +24,7 @@ class LoginView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Expanded(flex:3,child: Image(image: AssetImage(AssetConstants.topBackImg),fit: BoxFit.cover,)),
             Text("E-shop",style: TextStyle(fontSize: 23,fontWeight: FontWeight.w700,color: primaryColor),),
             SizedBox(height: 15,),
             Expanded(flex: 4,
@@ -105,8 +107,11 @@ class LoginView extends StatelessWidget {
               child: authProvider.loginLoading ?CircularProgressIndicator():MyElevatedButton(child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 10),
                 child: Text('Login',style: TextStyle(color: Colors.white,fontSize: 18)),
-              ), onPressed: (){
-                authProvider.validateLogin();
+              ), onPressed: () async{
+                await authProvider.validateLogin(context);
+                if(authProvider.userEmail.isNotEmpty) {
+                  navigateDashboard(context);
+                }
               }, style: colorBtnWithRadiusStyle),
             ),SizedBox(height: 10,),
             Row(mainAxisAlignment: MainAxisAlignment.center,
@@ -124,5 +129,8 @@ class LoginView extends StatelessWidget {
         ),
       ),
     ));
+  }
+  navigateDashboard(BuildContext context) {
+    Navigator.push(context,  MaterialPageRoute(builder: (context) => DashboardView()),);
   }
 }

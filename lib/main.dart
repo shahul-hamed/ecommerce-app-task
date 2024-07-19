@@ -1,6 +1,7 @@
 import 'package:ecommerce_task/helper/base_constants.dart';
 import 'package:ecommerce_task/providers/auth_provider.dart';
 import 'package:ecommerce_task/providers/products_provider.dart';
+import 'package:ecommerce_task/view/dashboard/dashboard_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         useMaterial3: false,fontFamily: BaseConstants.fontFamily
       ),
-      home: SignupView(),
+      home: DashboardView(),
     );
   }
 }

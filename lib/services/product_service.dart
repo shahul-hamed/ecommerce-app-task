@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class ProductService{
   Future<ProductsModel> getProducts(context) async {
-    late ProductsModel data;
+     ProductsModel data = ProductsModel();
     try {
       final response = await http.get(
         Uri.parse(ApiConstants.productListApi),
