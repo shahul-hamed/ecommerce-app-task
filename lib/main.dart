@@ -1,6 +1,7 @@
 import 'package:ecommerce_task/helper/base_constants.dart';
 import 'package:ecommerce_task/providers/auth_provider.dart';
 import 'package:ecommerce_task/providers/products_provider.dart';
+import 'package:ecommerce_task/view/dashboard/dashboard_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,11 +17,11 @@ Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  bool isFromRefresh= GetStorage().read('isFromRefresh')??false;
-  if(!isFromRefresh) {
-    GetStorage().remove('isLogin');
+  String token= GetStorage().read('token')??"";
+  if(token.isEmpty) {
+    GetStorage().remove('isLoggedIn');
   }
-  bool isLogin =(GetStorage().read("isLogin")?? false);
+  bool isLogin =(GetStorage().read("isLoggedIn")?? false);
   debugPrint("login$isLogin");
   SystemChrome.setSystemUIOverlayStyle( SystemUiOverlayStyle(
     statusBarColor: isLogin?primaryColor:white,
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         useMaterial3: false,fontFamily: BaseConstants.fontFamily
       ),
-      home: const SignupView(),
+      home: GetStorage().read('token') !=null?const DashboardView(): const SignupView(),
     );
   }
 }

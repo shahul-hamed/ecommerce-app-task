@@ -4,6 +4,7 @@ import 'package:ecommerce_task/providers/products_provider.dart';
 import 'package:ecommerce_task/theme/colors.dart';
 import 'package:ecommerce_task/view/authentication/login_view.dart';
 import 'package:ecommerce_task/view/dashboard/widgets/product_card.dart';
+import 'package:ecommerce_task/view/dashboard/widgets/product_shimmer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class _DashboardViewState extends State<DashboardView> {
     try{
       FirebaseAuth.instance.signOut();
       GetStorage().write('isLogin', false);
-      GetStorage().write('isFromRefresh',false);
+      GetStorage().remove('token');
       app.main();
       Navigator.pushReplacement(context,  MaterialPageRoute(builder: (context) => const LoginView()),);
     }
@@ -88,10 +89,10 @@ class _DashboardViewState extends State<DashboardView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: _isLoading?const Center(child: CircularProgressIndicator()):GridView.builder( itemCount: products.length,shrinkWrap: true,physics: const ClampingScrollPhysics(),
+                  child: GridView.builder( itemCount:_isLoading?8: products.length,shrinkWrap: true,physics: const ClampingScrollPhysics(),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisSpacing: 8,crossAxisSpacing: 8,childAspectRatio: 0.6
                     ), itemBuilder: (context, index) {
-                      return ProductCard(product: products[index],calculatedDiscountPrice: productProvider.calculateDiscountPrice(products[index]),isDiscountApply: isDiscountApply,);
+                      return _isLoading?ProductShimmerWidget():ProductCard(product: products[index],calculatedDiscountPrice: productProvider.calculateDiscountPrice(products[index]),isDiscountApply: isDiscountApply,);
                     },),
                 )
               ],

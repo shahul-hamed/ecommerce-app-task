@@ -1,3 +1,4 @@
+import 'package:ecommerce_task/common_widgets/custom_image.dart';
 import 'package:ecommerce_task/helper/asset_constants.dart';
 import 'package:ecommerce_task/model/product_model.dart';
 import 'package:ecommerce_task/theme/colors.dart';
@@ -22,8 +23,7 @@ class ProductCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(flex: 6,
-              child: product.images == null?Image.network(AssetConstants.placeholderImg,fit: BoxFit.cover,):Image.network("${product.images?.last}",fit: BoxFit.cover,loadingBuilder: (context,child,loadingProgress)=> loadingProgress == null?child:const Center(child: SizedBox(height: 35,width: 35,child: CircularProgressIndicator(),),),)),
-
+              child: CustomImageWidget(img:product.images?.last??"")),
           Expanded(flex:6,child: ListView(
             shrinkWrap: true,physics: const ClampingScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 10),
