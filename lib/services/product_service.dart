@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_task/helper/api_constants.dart';
 import 'package:ecommerce_task/model/product_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class ProductService{
@@ -15,10 +16,10 @@ class ProductService{
         final item = json.decode(response.body);
         data = ProductsModel.fromJson(item);// Mapping json response to our data model
       } else {
-        print('Error Occurred');
+        debugPrint('Error Occurred');
       }
     } catch (e) {
-      print('Error Occurred'+e.toString());
+      debugPrint('Error Occurred$e');
     }
     return data;
   }

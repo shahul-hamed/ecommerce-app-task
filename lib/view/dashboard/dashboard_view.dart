@@ -1,65 +1,16 @@
 import 'package:ecommerce_task/common_widgets/appbar.dart';
-import 'package:ecommerce_task/helper/asset_constants.dart';
 import 'package:ecommerce_task/model/product_model.dart';
 import 'package:ecommerce_task/providers/products_provider.dart';
 import 'package:ecommerce_task/theme/colors.dart';
+import 'package:ecommerce_task/view/authentication/login_view.dart';
+import 'package:ecommerce_task/view/dashboard/widgets/product_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:ecommerce_task/main.dart' as app;
 
-// class DashboardView extends StatelessWidget {
-//   const DashboardView({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     return  SafeArea(child: Scaffold(
-//       backgroundColor: lightGrey,
-//       appBar: CustomAppbar(title:"E-shop"),
-//       body: Padding(
-//         padding: EdgeInsets.symmetric(horizontal: 12,vertical: 12),
-//         child: Column(
-//          crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Expanded(
-//               child: GridView.builder( itemCount: productProvider.products.length,shrinkWrap: true,physics: ClampingScrollPhysics(),
-//                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisSpacing: 10,crossAxisSpacing: 10,childAspectRatio: 0.7
-//               ), itemBuilder: (context, index) {
-//                 return SizedBox(
-//                   child: Card(
-//                     color: white,elevation: 0.7,shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(10)
-//                   ),
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text("${productProvider.products[index].title}",style: TextStyle(fontSize: 16,color: black,fontWeight: FontWeight.w600),),
-//                         SizedBox(height: 7,),
-//                         Text("${productProvider.products[index].description}",style: TextStyle(fontSize: 15,color: black,fontWeight: FontWeight.w400),overflow: TextOverflow.ellipsis,),
-//                         SizedBox(height: 5,),
-//                         Text("\$ ${productProvider.products[index].price}",style: TextStyle(fontSize: 16,color: black,fontWeight: FontWeight.w400),overflow: TextOverflow.ellipsis,),
-//                         Row(
-//                           children: [
-//                             Text("\$ ${productProvider.products[index].price}",style: TextStyle(fontSize: 16,decoration: TextDecoration.lineThrough,color: darkGrey,fontWeight: FontWeight.w400),),
-//                             Text("\$ ${productProvider.calculateDiscountPrice(productProvider.products[index]).discountedPrice}",style: TextStyle(fontSize: 16,color: black,fontWeight: FontWeight.w400),),
-//                             Text("${productProvider.products[index].discountPercentage}% off",style: TextStyle(fontSize: 16,color: Colors.green,fontWeight: FontWeight.w700),),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 );
-//               },),
-//             )
-//
-//           ],
-//         ),
-//       ),
-//     ));
-//   }
-//
-// }
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
 
@@ -80,9 +31,14 @@ class _DashboardViewState extends State<DashboardView> {
       minimumFetchInterval: const Duration(seconds: 10),
     ));
     await _remoteConfig.fetchAndActivate();
+    setState(() {
+      isDiscountApply = _remoteConfig.getBool('isDiscountedPrice');
+    });
+    debugPrint("check-value$isDiscountApply");
+
   }
   bool _isLoading = false;
-  String _errorMessage = "";
+  bool isDiscountApply =false;
   @override
   void initState() {
     _initConfig();
@@ -98,10 +54,20 @@ class _DashboardViewState extends State<DashboardView> {
         _isLoading = false;
       });
     }).catchError((e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
+       debugPrint(e.toString());
     });
+  }
+  logout() {
+    try{
+      FirebaseAuth.instance.signOut();
+      GetStorage().write('isLogin', false);
+      GetStorage().write('isFromRefresh',false);
+      app.main();
+      Navigator.pushReplacement(context,  MaterialPageRoute(builder: (context) => const LoginView()),);
+    }
+    catch(e){
+      debugPrint("exception${e.toString()}");
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -113,65 +79,21 @@ class _DashboardViewState extends State<DashboardView> {
           backgroundColor: lightGrey,
           appBar: CustomAppbar(title:"E-shop",
             trailingOnTap: (){
-              FirebaseAuth.instance.signOut();
+              logout();
             },
-
           ),
           body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: _isLoading?Center(child: CircularProgressIndicator()):GridView.builder( itemCount: products.length,shrinkWrap: true,physics: ClampingScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisSpacing: 4,crossAxisSpacing: 4,childAspectRatio: 0.6
+                  child: _isLoading?const Center(child: CircularProgressIndicator()):GridView.builder( itemCount: products.length,shrinkWrap: true,physics: const ClampingScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisSpacing: 8,crossAxisSpacing: 8,childAspectRatio: 0.6
                     ), itemBuilder: (context, index) {
-                      return SizedBox(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: white,
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [BoxShadow(color: lightGrey,blurRadius: 2)]
-                          ),
-
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(flex: 5,
-                                    child: products[index].images == null?Image.network(AssetConstants.placeholderImg,fit: BoxFit.cover,):Image.network("${products[index].images?.last}",fit: BoxFit.cover,loadingBuilder: (context,child,loadingProgress)=> loadingProgress == null?child:Center(child: Container(child: CircularProgressIndicator(),height: 35,width: 35,),),)),
-
-                                Expanded(flex:6,child: ListView(
-                                  shrinkWrap: true,physics: ClampingScrollPhysics(),
-                                  children: [
-                                    Text("${products[index].title}",style: TextStyle(fontSize: 12,color: black,fontWeight: FontWeight.w600),),
-                                    SizedBox(height: 7,),
-                                    Text("${products[index].description}",style: TextStyle(fontSize: 12,color: black,fontWeight: FontWeight.w400),overflow: TextOverflow.ellipsis,maxLines: 3,),
-                                    SizedBox(height: 7,),
-                                   _remoteConfig.getBool('isDiscountedPrice') != true?Text("\$${products[index].price}",style: TextStyle(fontSize: 12,color: black,fontWeight: FontWeight.w400),overflow: TextOverflow.ellipsis,):
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: [
-                                          Text("\$${products[index].price}",style: TextStyle(fontSize: 11,decoration: TextDecoration.lineThrough,color: darkGrey,fontWeight: FontWeight.w400),),
-                                          SizedBox(width: 6,),
-                                          Text("\$${productProvider.calculateDiscountPrice(products[index])}",style: TextStyle(fontSize: 12,color: black,fontWeight: FontWeight.w400),),
-                                          SizedBox(width: 6,),
-                                          Text("${products[index].discountPercentage}% off",style: TextStyle(fontSize: 12,color: Colors.green,fontWeight: FontWeight.w700),),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ))
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
+                      return ProductCard(product: products[index],calculatedDiscountPrice: productProvider.calculateDiscountPrice(products[index]),isDiscountApply: isDiscountApply,);
                     },),
                 )
-
               ],
             ),
           ),

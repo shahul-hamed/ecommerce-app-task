@@ -17,7 +17,6 @@ class ProductsProvider with ChangeNotifier {
       ProductsModel data = await service.getProducts(context);
       products = data.products ?? [];
       loading = false;
-      print("length${products.length}");
       notifyListeners();
     }
     catch(e){
@@ -28,8 +27,7 @@ class ProductsProvider with ChangeNotifier {
   }
   double calculateDiscountPrice(Products data) {
     double discountedAmt = ((double.parse(data.discountPercentage.toString()) / 100) * double.parse(data.price.toString()));
-    print("disc$discountedAmt");
-    data.discountedPrice = (double.parse(data.price.toString()) +  discountedAmt);
+    data.discountedPrice = (double.parse(data.price.toString()) -  discountedAmt);
     return data.discountedPrice.roundToDouble();
   }
   @override

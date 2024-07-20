@@ -13,49 +13,51 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
   final bool isBackRequired;
   final Key? iconKey;
-  const CustomAppbar({this.isBackRequired=false,this.height=30,this.leadingIconColor = primaryColor,this.title="",this.trailingOnTap,this.leadingOnTap,this.leadingIcon="",this.trailingIcon,this.iconKey,Key? key}) : super(key: key);
+  const CustomAppbar({this.isBackRequired=false,this.height=30,this.leadingIconColor = primaryColor,this.title="",this.trailingOnTap,this.leadingOnTap,this.leadingIcon="",this.trailingIcon,this.iconKey,super.key});
 
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(60),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            !isBackRequired?Container(width: 18,):
-            IconButton(
-              onPressed: () {
-                if(leadingOnTap!=null){
-                  leadingOnTap!();
-                }
-                else{
-                  // Get.back();
-                }
-              },
-              icon:  Icon(Icons.arrow_back_ios,size:20,color: black,key: iconKey,semanticLabel: "backIcon"),
-            ),
-            Expanded(
-              child: Text(title,
-                style: const TextStyle(
-                    color: black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500
-                ),),
-            ),
-            // const Spacer(),
-
-            IconButton(
-              onPressed: () {
-                // Get.to(() => const ProfileScreen());
-              },
-              icon:  Icon(
-               Icons.logout_rounded,
-                size: 24,
+      child: Container(color: primaryColor,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              !isBackRequired?Container(width: 18,):
+              IconButton(
+                onPressed: () {
+                  if(leadingOnTap!=null){
+                    leadingOnTap!();
+                  }
+                  else{
+                    // Get.back();
+                  }
+                },
+                icon:  Icon(Icons.arrow_back_ios,size:20,color: black,key: iconKey,semanticLabel: "backIcon"),
               ),
-            ),
-          ],
+              Expanded(
+                child: Text(title,
+                  style: const TextStyle(
+                      color: white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500
+                  ),),
+              ),
+              // const Spacer(),
+
+              IconButton(
+                onPressed: () {
+                  trailingOnTap!();
+                },
+                icon:  const Icon(
+                 Icons.logout_rounded,
+                  size: 24,color: white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -65,7 +65,7 @@ class  CustomTextField extends StatelessWidget {
     this.hintSize =12,
     this.obscureText=false,
     this.suffixOnTap,
-    this.textSize=18,this.fillColor=white,this.isSuffix=false,this.isPassword=false,this.hintText="",this.suffix,this.hintColor= black,Key? key}) : super(key: key);
+    this.textSize=18,this.fillColor=white,this.isSuffix=false,this.isPassword=false,this.hintText="",this.suffix,this.hintColor= black,super.key});
 
   @override
   Widget build(BuildContext context) {

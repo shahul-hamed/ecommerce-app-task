@@ -1,8 +1,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_task/view/dashboard/dashboard_view.dart';
+import 'package:ecommerce_task/view/authentication/login_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 class AuthProvider with ChangeNotifier {
   TextEditingController nameController = TextEditingController();
@@ -69,7 +70,6 @@ class AuthProvider with ChangeNotifier {
     }
     else{
       isNameInvalid = true;
-      print("invalid");
     }
     notifyListeners();
   }
@@ -78,7 +78,7 @@ class AuthProvider with ChangeNotifier {
     validatePassword(passwordController.text);
 
     if(!isEmailEmpty && !isEmailInvalid && !isPasswordInvalid) {
-      // loginLoading=true;
+      loginLoading=true;
       notifyListeners();
       _signInWithEmailAndPassword(context);
 
@@ -86,7 +86,6 @@ class AuthProvider with ChangeNotifier {
     else{
       isEmailInvalid = true;
       notifyListeners();
-    print("invalid");
     }
   }
    _register(BuildContext context) async {
@@ -100,7 +99,6 @@ class AuthProvider with ChangeNotifier {
       if (user != null) {
         _success = true;
         userEmail = (user.email)??"";
-        print("email$userEmail");
         _createUser(user.uid);
       } else {
         _success = true;
@@ -108,8 +106,7 @@ class AuthProvider with ChangeNotifier {
       loading =false;
       notifyListeners();
       if (!context.mounted) return;
-      navigateDashboard(context);
-
+      navigateLogin(context);
     }
     catch(e){
       debugPrint(e.toString());
@@ -141,15 +138,20 @@ class AuthProvider with ChangeNotifier {
         userEmail = (user.email)??"";
     } else {
     }
-    print("email$userEmail");
     loginLoading =false;
     notifyListeners();
-    // if (!context.mounted) return;
-    // navigateDashboard(context);
   }
-  navigateDashboard(BuildContext context) {
-    Navigator.push(context,  MaterialPageRoute(builder: (context) => DashboardView()),);
+
+  navigateLogin(BuildContext context) {
+    Navigator.push(context,  MaterialPageRoute(builder: (context) => const LoginView()),);
   }
+  clearInputs() {
+    nameController.clear();
+    emailController.clear();
+    passwordController.clear();
+    GetStorage().write('isLogin', false);
+  }
+
  @override
   void dispose() {
     loginLoading = false;
